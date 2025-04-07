@@ -1,0 +1,45 @@
+# Ignore Python cache files
+__pycache__/
+*.pyc
+
+# Ignore IDE configuration files
+.vscode/
+.idea/
+
+# Ignore environment files
+.env
+venv/
+
+# Ignore all .DS_Store files (macOS specific)
+.DS_Store
+
+# Ignore .DS_Store files in all directories (macOS specific)
+**/.DS_Store
+
+# Ignore Thumbs.db (Windows specific)
+Thumbs.db
+
+# Ignore desktop.ini (Windows specific)
+desktop.ini
+
+# Ignore .Spotlight-V100 (macOS specific)
+.Spotlight-V100
+
+# Ignore .Trashes (macOS specific)
+.Trashes
+
+# Ignore .fseventsd (macOS specific)
+.fseventsd/
+
+# Ignore coverage reports
+coverage.xml
+*.cover
+*.py,cover
+
+# Ignore Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Ignore logs and temporary files
+*.log
+tmp/
+temp/
