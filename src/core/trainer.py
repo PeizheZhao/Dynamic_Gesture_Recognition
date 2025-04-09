@@ -138,7 +138,7 @@ class Trainer:
         })
 
         del logger
-
+        
     def save_checkpoint(self, epoch):
         torch.save(
             {
