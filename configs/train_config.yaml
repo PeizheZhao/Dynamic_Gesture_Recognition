@@ -5,9 +5,10 @@ normalization:
   std: [0.229, 0.224, 0.225]
 
 training:
-  batch_size: 16
-  lr: 0.01
-  epochs: 100
+  batch_size: 12
+  lr: 0.001
+  optimizer_type: 'adam'
+  epochs: 250
   num_workers: 4
   train_crop: 'random'
   sample_size: 224
@@ -17,6 +18,6 @@ training:
   downsample: 2
   norm_value: 255
   modality: 'RGB'
-  video_path: ''
-  annotation_path: ''
+  video_path: '../frames'
+  annotation_path: '../Dynamic_Gesture_Dataset/data/annotations/versions/v1/annotation_all_balance.json'
   no_train: false

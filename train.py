@@ -4,10 +4,13 @@ from src.data.dataset import get_training_set
 from src.data.dataloader import get_dataloader
 from src.transform import *
 from src.core.trainer import Trainer
-from src.models import c3d
+from src.models import c2d, c2da
+from src.utils import *
+import warnings
 
 
 def main():
+    warnings.filterwarnings("ignore")
     opt = HyperParameters("configs/train_config.yaml")
 
     if opt.no_mean_norm and not opt.std_norm:
@@ -52,13 +55,17 @@ def main():
     train_dataloader = get_dataloader(opt, train_dataset)
     val_dataloader = get_dataloader(opt, val_dataset)
 
-    model = c3d.get_model(sample_size=224, sample_duration=8, num_classes=32)
+    model = c2da.get_model(num_classes=32)
 
+    model.calculate_parameter_size()
     trainer = Trainer(opt, model, train_dataloader, val_dataloader)
-    for epoch in range(opt.epochs):
-        trainer.train_epoch(epoch)
-        trainer.validate(epoch)
 
+    header = ['Epoch', 'Train_Loss', 'Train_Acc@1', 'Train_Acc@5', 'Val_Loss', 'Val_Acc@1', 'Val_Acc@5']
+    logger = Logger(header)
+
+    for epoch in range(opt.epochs):
+        trainer.train_epoch(epoch, logger)
+        trainer.validate(epoch, logger)
 
 if __name__ == "__main__":
     main()

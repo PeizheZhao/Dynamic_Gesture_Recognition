@@ -155,7 +155,7 @@ def get_sensor(video_dir_path, frame_indices, sensor_duration, total_frames):
     for i in frame_indices:
         begin = i * sensor_duration
         sensor_data = pd.concat(
-            [sensor_data, df.iloc[begin : begin + sensor_duration]], axis=0
+            [sensor_data, df.iloc[begin : begin + sensor_duration, 1:]], axis=0
         )
     return torch.tensor(sensor_data.values, dtype=torch.float32)
 

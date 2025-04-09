@@ -39,6 +39,9 @@ coverage.xml
 # Ignore Jupyter Notebook checkpoints
 .ipynb_checkpoints/
 
+# Ignore log files and directories
+logs/
+
 # Ignore logs and temporary files
 *.log
 tmp/
