@@ -177,7 +177,7 @@ def make_dataset(
     list_subset = ""
     for x in subset:
         list_subset += x + ","
-    print("[INFO]: EgoGesture Dataset - " + list_subset + " is loading...")
+    print("[INFO]: Dataset - " + list_subset + " is loading...")
     for i in range(len(video_names)):
         # if i % 100 == 0:
         # print("dataset loading [{}/{}]".format(i, len(video_names)))

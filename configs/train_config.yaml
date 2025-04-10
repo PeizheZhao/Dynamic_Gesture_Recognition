@@ -5,13 +5,13 @@ normalization:
   std: [0.229, 0.224, 0.225]
 
 training:
-  batch_size: 16
-  lr: 0.001
+  batch_size: 24
+  lr: 0.0005
   optimizer_type: 'adam'
   epochs: 250
   num_workers: 8
-  train_crop: 'random'
-  sample_size: 360
+  train_crop: 'corner'
+  sample_size: 540
   scales: [1.0, 0.8, 0.6]
   sample_duration: 8
   sensor_duration: 10

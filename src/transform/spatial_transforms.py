@@ -370,11 +370,6 @@ class MultiScaleRandomCrop(object):
 
 
 
-
-
-
-
-
 class SpatialElasticDisplacement(object):
 
     def __init__(self, sigma=3.0, alpha=1.0, order=3, cval=0, mode="constant"):

@@ -1,6 +1,7 @@
 import csv
 import os
 from datetime import datetime
+from collections import defaultdict
 
 class Logger(object):
     def __init__(self, header):
@@ -13,7 +14,7 @@ class Logger(object):
         self.logger = csv.writer(self.log_file, delimiter='\t')
         self.logger.writerow(header)
         self.header = header
-        self.write_interval = 10  
+        self.write_interval = 5  
         self.buffer = [] 
 
     def log(self, values):
@@ -21,30 +22,16 @@ class Logger(object):
 
         if int(values['Epoch']) % self.write_interval == 0:
             self.write_to_file()
+    
+    def merge_logs_by_epoch(self, buffer_dict):
+        epoch_dict = defaultdict(dict)
+        for d in buffer_dict:
+            epoch = int(d['Epoch'])
+            epoch_dict[epoch].update({k: v for k, v in d.items() if v != ''})
+        return list(epoch_dict.values())
 
     def write_to_file(self):
-        rows = []
-        epoch_set = set()
-
-        try:
-            with open(self.path, 'r', newline='') as read_file:
-                reader = csv.DictReader(read_file, delimiter='\t')
-                for row in reader:
-                    rows.append(row)
-                    epoch_set.add(int(row['Epoch']))
-        except FileNotFoundError:
-            pass
-
-        for values in self.buffer:
-            if int(values['Epoch']) in epoch_set:
-                for row in rows:
-                    if int(row['Epoch']) == int(values['Epoch']):
-                        row.update(values)
-                        break
-            else:
-                rows.append(values)
-
-        self.buffer = []
+        rows = self.merge_logs_by_epoch(self.buffer)
 
         with open(self.path, 'w', newline='') as write_file:
             writer = csv.DictWriter(write_file, fieldnames=self.header, delimiter='\t')

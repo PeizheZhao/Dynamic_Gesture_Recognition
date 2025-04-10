@@ -4,7 +4,7 @@ from src.data.dataset import get_training_set
 from src.data.dataloader import get_dataloader
 from src.transform import *
 from src.core.trainer import Trainer
-from src.models import c2d, c2da
+from src.models import c2d, c2da, c2dp
 from src.utils import *
 import warnings
 
@@ -55,7 +55,7 @@ def main():
     train_dataloader = get_dataloader(opt, train_dataset)
     val_dataloader = get_dataloader(opt, val_dataset)
 
-    model = c2da.get_model(num_classes=32)
+    model = c2dp.get_model(num_classes=32)
 
     model.calculate_parameter_size()
     trainer = Trainer(opt, model, train_dataloader, val_dataloader)

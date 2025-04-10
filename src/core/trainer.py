@@ -8,7 +8,7 @@ from ..utils import *
 class Trainer:
     def __init__(self, opt, model, train_loader, val_loader):
         self.model = model
-        self.optimizer = model.get_optimizer(lr = opt.lr)
+        self.optimizer = model.get_optimizer(lr = opt.lr, weight_decay=1e-4)
         self.criterion = nn.CrossEntropyLoss()
         self.train_loader = train_loader
         self.val_loader = val_loader
@@ -79,7 +79,6 @@ class Trainer:
         'Train_Acc@5': top5.avg.item()
         })
 
-        del logger
 
     def validate(self, epoch, logger):
         print("Validation epoch {}".format(epoch))
@@ -136,8 +135,6 @@ class Trainer:
         'Val_Acc@1': top1.avg.item(),
         'Val_Acc@5': top5.avg.item()
         })
-
-        del logger
         
     def save_checkpoint(self, epoch):
         torch.save(
