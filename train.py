@@ -1,4 +1,4 @@
-from torch.utils.data import random_split
+from torch.utils.data import random_split, Subset
 from configs.hyperparameters import HyperParameters
 from src.data.dataset import get_training_set
 from src.data.dataloader import get_dataloader
@@ -46,6 +46,12 @@ def main():
     training_data = get_training_set(
         opt, spatial_transform, temporal_transform, target_transform
     )
+
+
+    reduce_factor = 0.5
+    reduced_size = int(len(training_data) * reduce_factor)
+    indices = torch.randperm(len(training_data)).tolist()[:reduced_size]
+    training_data = Subset(training_data, indices)
 
     train_size = int(0.8 * len(training_data))
     val_size = len(training_data) - train_size
