@@ -8,7 +8,7 @@ from ..utils import *
 class Trainer:
     def __init__(self, opt, model, train_loader, val_loader):
         self.model = model
-        self.optimizer = model.get_optimizer(lr = opt.lr, weight_decay=1e-4)
+        self.optimizer = model.get_optimizer(lr=opt.lr)
         self.criterion = nn.CrossEntropyLoss()
         self.train_loader = train_loader
         self.val_loader = val_loader
@@ -73,13 +73,14 @@ class Trainer:
             )
         )
 
-        logger.log({
-        'Epoch': epoch,
-        'Train_Loss': losses.avg.item(),
-        'Train_Acc@1': top1.avg.item(),
-        'Train_Acc@5': top5.avg.item()
-        })
-
+        logger.log(
+            {
+                "Epoch": epoch,
+                "Train_Loss": losses.avg.item(),
+                "Train_Acc@1": top1.avg.item(),
+                "Train_Acc@5": top5.avg.item(),
+            }
+        )
 
     def validate(self, epoch, logger):
         print("Validation epoch {}".format(epoch))
@@ -90,9 +91,7 @@ class Trainer:
         losses = AverageMeter()
         top1 = AverageMeter()
         top5 = AverageMeter()
-        class_acc = []
-        for _ in range(opt.num_classes):
-            class_acc.append(AverageMeter())
+        val_log = LabelLogger()
 
         end_time = time.time()
 
@@ -112,12 +111,10 @@ class Trainer:
             outputs = self.model(inputs[0], inputs[1], inputs[2])
             loss = self.criterion(outputs, labels)
             prec1, prec5 = calculate_accuracy(outputs.data, labels.data, topk=(1, 5))
-            class_acc_b = calculate_class_accuracy(outputs.data, labels.data, opt.num_classes)
             top1.update(prec1, batch_size)
             top5.update(prec5, batch_size)
-            for i in range(opt.num_classes):
-                class_acc[i].upadte(class_acc_b[i], batch_size)
             losses.update(loss.data, batch_size)
+            val_log.log(outputs.data, labels.data)
 
             batch_time.update(time.time() - end_time)
             end_time = time.time()
@@ -136,16 +133,20 @@ class Trainer:
             )
         )
 
+        class_accuracies = calculate_class_accuracy(
+            val_log.outputs_labels, val_log.true_labels, self.opt.num_classes
+        )
+        val_log.clear()
+        logger.log(
+            {
+                "Epoch": epoch,
+                "Val_Loss": losses.avg.item(),
+                "Val_Acc@1": top1.avg.item(),
+                "Val_Acc@5": top5.avg.item(),
+                "Val_Acc_Class": class_accuracies,
+            }
+        )
 
-        class_accuracies = [meter.avg for meter in class_acc]
-        logger.log({
-        'Epoch': epoch,
-        'Val_Loss': losses.avg.item(),
-        'Val_Acc@1': top1.avg.item(),
-        'Val_Acc@5': top5.avg.item(),
-        'Val_Acc_Class': class_accuracies
-        })
-        
     def save_checkpoint(self, epoch):
         torch.save(
             {
@@ -223,8 +224,16 @@ if __name__ == "__main__":
     val_dataloader = get_dataloader(opt, val_dataset)
 
     model = c2d.get_model(num_classes=32)
-    
-    header = ['Epoch', 'Train_Loss', 'Train_Acc@1', 'Train_Acc@5', 'Val_Loss', 'Val_Acc@1', 'Val_Acc@5']
+
+    header = [
+        "Epoch",
+        "Train_Loss",
+        "Train_Acc@1",
+        "Train_Acc@5",
+        "Val_Loss",
+        "Val_Acc@1",
+        "Val_Acc@5",
+    ]
     logger = Logger(header)
 
     trainer = Trainer(opt, model, train_dataloader, val_dataloader)

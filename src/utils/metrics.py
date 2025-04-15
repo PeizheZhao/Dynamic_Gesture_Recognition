@@ -58,7 +58,7 @@ def calculate_class_accuracy(outputs, targets, num_classes):
             correct_counts[target.item()] += 1
 
     # Calculate accuracy for each class
-    class_accuracy = []
+    class_accuracy = [0.0] * num_classes
     for cls in range(num_classes):
         if total_counts[cls] > 0:
             class_accuracy[cls] = correct_counts[cls] / total_counts[cls] * 100.0

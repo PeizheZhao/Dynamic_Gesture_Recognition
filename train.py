@@ -61,7 +61,7 @@ def main():
     train_dataloader = get_dataloader(opt, train_dataset)
     val_dataloader = get_dataloader(opt, val_dataset)
 
-    model = c2dp.get_model(num_classes=opt.num_classes)
+    model = c2da.get_model(num_classes=opt.num_classes)
 
     model.calculate_parameter_size()
     trainer = Trainer(opt, model, train_dataloader, val_dataloader)
