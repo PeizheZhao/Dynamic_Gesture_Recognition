@@ -17,6 +17,7 @@ training:
   sensor_duration: 10
   downsample: 2
   norm_value: 255
+  num_classes: 32
   modality: 'RGB'
   video_path: '../frames'
   annotation_path: '../Dynamic_Gesture_Dataset/data/annotations/versions/v1/annotation_all_balance.json'

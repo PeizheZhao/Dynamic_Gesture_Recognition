@@ -37,16 +37,17 @@ class Trainer:
         )
         for batch_idx, (inputs, labels) in progress_bar:
             data_time.update(time.time() - end_time)
+            batch_size = inputs[2].size(0)
             inputs = [input.to(self.device) for input in inputs]
             labels = labels.to(self.device)
 
             outputs = self.model(inputs[0], inputs[1], inputs[2])
             loss = self.criterion(outputs, labels)
 
-            losses.update(loss.data, inputs[2].size(0))
+            losses.update(loss.data, batch_size)
             prec1, prec5 = calculate_accuracy(outputs.data, labels.data, topk=(1, 5))
-            top1.update(prec1, inputs[2].size(0))
-            top5.update(prec5, inputs[2].size(0))
+            top1.update(prec1, batch_size)
+            top5.update(prec5, batch_size)
 
             self.optimizer.zero_grad()
             loss.backward()
@@ -89,6 +90,9 @@ class Trainer:
         losses = AverageMeter()
         top1 = AverageMeter()
         top5 = AverageMeter()
+        class_acc = []
+        for _ in range(opt.num_classes):
+            class_acc.append(AverageMeter())
 
         end_time = time.time()
 
@@ -101,16 +105,19 @@ class Trainer:
         )
         for batch_idx, (inputs, labels) in progress_bar:
             data_time.update(time.time() - end_time)
+            batch_size = inputs[2].size(0)
             with torch.no_grad():
                 inputs = [input.to(self.device) for input in inputs]
                 labels = labels.to(self.device)
             outputs = self.model(inputs[0], inputs[1], inputs[2])
             loss = self.criterion(outputs, labels)
             prec1, prec5 = calculate_accuracy(outputs.data, labels.data, topk=(1, 5))
-            top1.update(prec1, inputs[2].size(0))
-            top5.update(prec5, inputs[2].size(0))
-
-            losses.update(loss.data, inputs[2].size(0))
+            class_acc_b = calculate_class_accuracy(outputs.data, labels.data, opt.num_classes)
+            top1.update(prec1, batch_size)
+            top5.update(prec5, batch_size)
+            for i in range(opt.num_classes):
+                class_acc[i].upadte(class_acc_b[i], batch_size)
+            losses.update(loss.data, batch_size)
 
             batch_time.update(time.time() - end_time)
             end_time = time.time()
@@ -129,11 +136,14 @@ class Trainer:
             )
         )
 
+
+        class_accuracies = [meter.avg for meter in class_acc]
         logger.log({
         'Epoch': epoch,
         'Val_Loss': losses.avg.item(),
         'Val_Acc@1': top1.avg.item(),
-        'Val_Acc@5': top5.avg.item()
+        'Val_Acc@5': top5.avg.item(),
+        'Val_Acc_Class': class_accuracies
         })
         
     def save_checkpoint(self, epoch):

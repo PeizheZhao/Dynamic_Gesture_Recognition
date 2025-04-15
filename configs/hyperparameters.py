@@ -38,6 +38,7 @@ class HyperParameters:
         self.lr = self._get_param("training", "lr", 0.01)
         self.epochs = self._get_param("training", "epochs", 100)
         self.optimizer_type = self._get_param("training", "optimizer_type", 'adam')
+        self.num_classes = self._get_param("training", "num_classes", 32)
 
     def _get_param(self, section: str, key: str, default: Any) -> Any:
         return self.config.get(section, {}).get(key, default)

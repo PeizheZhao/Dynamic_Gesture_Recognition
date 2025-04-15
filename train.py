@@ -48,7 +48,7 @@ def main():
     )
 
 
-    reduce_factor = 0.5
+    reduce_factor = 1
     reduced_size = int(len(training_data) * reduce_factor)
     indices = torch.randperm(len(training_data)).tolist()[:reduced_size]
     training_data = Subset(training_data, indices)
@@ -61,12 +61,12 @@ def main():
     train_dataloader = get_dataloader(opt, train_dataset)
     val_dataloader = get_dataloader(opt, val_dataset)
 
-    model = c2dp.get_model(num_classes=32)
+    model = c2dp.get_model(num_classes=opt.num_classes)
 
     model.calculate_parameter_size()
     trainer = Trainer(opt, model, train_dataloader, val_dataloader)
 
-    header = ['Epoch', 'Train_Loss', 'Train_Acc@1', 'Train_Acc@5', 'Val_Loss', 'Val_Acc@1', 'Val_Acc@5']
+    header = ['Epoch', 'Train_Loss', 'Train_Acc@1', 'Train_Acc@5', 'Val_Loss', 'Val_Acc@1', 'Val_Acc@5', 'Val_Acc_Class']
     logger = Logger(header)
 
     for epoch in range(opt.epochs):
