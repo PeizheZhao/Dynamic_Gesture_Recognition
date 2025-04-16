@@ -1,7 +1,0 @@
-name: gesture
-channels:
-  - defaults
-dependencies:
-  - python=3.12.3
-  - numpy
-prefix: /root/miniconda3/envs/gesture
